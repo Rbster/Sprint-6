@@ -2,7 +2,9 @@ package ru.sber.services
 
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
@@ -44,29 +46,6 @@ class CombinedBean : InitializingBean {
 
 }
 
-@Component
-class InitialisePropertiesBeanPostProcessor : BeanPostProcessor {
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-        if (beanName == "combinedBean") {
-            val b: CombinedBean = bean as CombinedBean
-            b.postProcessBeforeInitializationOrderMessage = "postProcessBeforeInitialization() is called"
-            return b
-        } else {
-            return bean
-        }
-    }
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        if (beanName == "combinedBean") {
-            val b: CombinedBean = bean as CombinedBean
-            b.postProcessAfterInitializationOrderMessage = "postProcessAfterInitialization() is called"
-            return b
-        } else {
-            return bean
-        }
-    }
-}
-
-
 
 @Component
 class BeanFactoryPostProcessorBean : BeanFactoryPostProcessorInterface {
@@ -81,4 +60,10 @@ interface BeanFactoryPostProcessorInterface {
     @PostConstruct
     fun postConstruct()
 }
+
+
+//abstract class BeanFactoryPostProcessorInterface {
+//    @PostConstruct
+//    open fun postConstruct() {}
+//}
 
