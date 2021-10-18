@@ -25,9 +25,7 @@ class ServicesConfig {
 }
 
 @Configuration
+@ComponentScan("ru.sber.services")
 class AnotherServicesConfig {
-    @Bean
-    fun fourthService(): FourthService {
-        return FourthService()
-    }
+    fun fourthService() {}
 }
