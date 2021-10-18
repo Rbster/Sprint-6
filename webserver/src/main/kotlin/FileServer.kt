@@ -1,5 +1,7 @@
 import ru.sber.filesystem.VFilesystem
+import ru.sber.filesystem.VPath
 import java.io.IOException
+import java.lang.RuntimeException
 import java.net.ServerSocket
 
 /**
@@ -32,7 +34,7 @@ class FileServer {
             //throw new UnsupportedOperationException();
 
             // TODO 1) Use socket.accept to get a Socket object
-
+            var clientSocket = socket.accept()
 
             /*
             * TODO 2) Using Socket.getInputStream(), parse the received HTTP
@@ -43,6 +45,44 @@ class FileServer {
             *
             *     GET /path/to/file HTTP/1.1
             */
+            var requestString: String?
+            var requestParts: List<String>?
+            var vPath: VPath?
+            var content: String? = null
+            var clientInputStream = clientSocket.getInputStream()
+
+            clientInputStream.use {
+                it.bufferedReader().use {
+                    requestString = it.readLine()
+                }
+            }
+
+
+
+            requestParts = requestString?.split(' ')
+            if (requestParts != null &&
+                requestParts.size == 3 &&
+                (requestParts[2] == "HTTP/1.1" ||
+                requestParts[2] == "HTTP/1.0" ||
+                requestParts[2] == "HTTP/2") &&
+                requestParts[0] == "GET") {
+
+                vPath = getVPathOrNull(requestParts[1])
+                content = if (vPath != null) fs.readFile(vPath) else null
+
+            }
+
+
+
+            var clientOutputStream = clientSocket.getOutputStream()
+            clientOutputStream.use {
+                it.bufferedWriter().use {
+                    it.write(responseString(content))
+                }
+            }
+
+
+            clientSocket.close()
 
 
             /*
@@ -66,5 +106,31 @@ class FileServer {
              * Don't forget to close the output stream.
              */
         }
+
+
+
     }
+
+    private fun responseString(content: String?): String {
+        return if (content == null) {
+            "HTTP/1.0 404 Not Found\r\n" +
+            "Server: FileServer\r\n" +
+            "\r\n"
+        } else {
+            "HTTP/1.0 200 OK\r\n" +
+            "Server: FileServer\r\n" +
+            "\r\n$content\r\n"
+        }
+    }
+
+    private fun getVPathOrNull(path: String): VPath? =
+        try {
+            VPath(path)
+        } catch (e: RuntimeException) {
+            null
+        }
+
 }
+
+
+
