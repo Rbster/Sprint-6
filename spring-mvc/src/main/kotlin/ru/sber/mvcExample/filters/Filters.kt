@@ -2,9 +2,13 @@ package ru.sber.mvcExample.filters
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.CommonsRequestLoggingFilter
+import java.time.Clock
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
@@ -33,6 +37,10 @@ class LoggingFilter : Filter {
 @Component
 @Order(2)
 class AuthFilter : Filter {
+
+    lateinit var clock: Clock
+    @Autowired set
+
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
         println("-----> Filtering in LogFilter")
         val httpRequest = request as HttpServletRequest
@@ -43,13 +51,16 @@ class AuthFilter : Filter {
 
         if (httpRequest.cookies != null) {
             for (q in httpRequest.cookies) {
-                if (q.name == "authorised") {
+                if (q.name == "auth") {
                     cookie = q
                 }
             }
         }
-
-        if (requestURI != loginURI && (cookie == null || cookie.name != "something")) {
+        println("----${clock.instant()}")
+        if (requestURI != loginURI && (cookie == null ||
+                    Instant.from(
+                        DateTimeFormatter.ISO_INSTANT.parse(cookie.value)
+                    ) < clock.instant() )) {
             // redirect
             println("<----- redirect from LogFilter")
             httpResponse.sendRedirect(loginURI)
