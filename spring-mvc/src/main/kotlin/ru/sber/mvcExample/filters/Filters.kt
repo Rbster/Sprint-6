@@ -22,13 +22,14 @@ import javax.servlet.http.HttpServletResponse
 @Order(1)
 class LoggingFilter : Filter {
     companion object {
-        var logger: Log = LogFactory.getLog(CommonsRequestLoggingFilter::class.java)
+        var logger: Log = LogFactory.getLog(this::class.java)
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
         println("-----> Filtering in CheckAuthFilter")
         val httpRequest = request as HttpServletRequest
-        logger.info(httpRequest.method + " request from " + httpRequest.remoteAddr)
+        logger.info(httpRequest.method + " request from " + httpRequest.remoteAddr + " to " + httpRequest.requestURI)
+
         chain!!.doFilter(request, response)
         println("<----- out CheckAuthFilter")
     }
@@ -42,11 +43,12 @@ class AuthFilter : Filter {
     @Autowired set
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        println("-----> Filtering in LogFilter")
+        println("-----> Filtering in AuthFilter")
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
         var cookie: Cookie? = null
         val loginURI = request.contextPath + "/login"
+        val authURI = request.contextPath + "/auth"
         val requestURI = request.requestURI
 
         if (httpRequest.cookies != null) {
@@ -56,19 +58,20 @@ class AuthFilter : Filter {
                 }
             }
         }
-        println("----${clock.instant()}")
-        if (requestURI != loginURI && (cookie == null ||
+        println("---- now ${clock.instant()} mast be more "+
+                "${Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cookie?.value))}")
+        if (requestURI != loginURI && requestURI != authURI && (cookie == null ||
                     Instant.from(
                         DateTimeFormatter.ISO_INSTANT.parse(cookie.value)
-                    ) < clock.instant() )) {
+                    ) >= clock.instant() )) {
             // redirect
-            println("<----- redirect from LogFilter")
+            println("<----- redirect from AuthFilter")
             httpResponse.sendRedirect(loginURI)
 
         } else {
             chain!!.doFilter(request, response)
         }
-        println("<----- out LogFilter")
+        println("<----- out AuthFilter")
     }
 
 }
