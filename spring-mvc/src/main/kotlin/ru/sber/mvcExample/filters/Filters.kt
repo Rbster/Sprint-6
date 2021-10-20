@@ -12,16 +12,18 @@ import javax.servlet.ServletResponse
 @Order(1)
 class LogFilter : Filter {
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        TODO("Not yet implemented")
+        println("-----> Filtering in LogFilter")
+        chain!!.doFilter(request, response)
     }
 
 }
 
 @Component
-@Order(1)
+@Order(2)
 class CheckAuthFilter : Filter {
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        TODO("Not yet implemented")
+        println("-----> Filtering in CheckAuthFilter")
+        chain!!.doFilter(request, response)
     }
 
 }
