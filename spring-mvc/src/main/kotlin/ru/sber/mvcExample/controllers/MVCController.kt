@@ -38,6 +38,7 @@ class MVCController {
 
     @PostMapping("/app/add")
     fun add(@ModelAttribute element: AddressInfo): String {
+        println("---------->$element")
         val id: String? = addressBookRepository.add(element)
         if (id == null) {
             logger.error("Add went wrong. Element $element wasn't added")

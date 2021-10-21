@@ -20,12 +20,13 @@
         <td><span th:text="${elem.name}"> Name </span></td>
         <td><span th:text="${elem.address}"> Address </span></td>
     </tr>
-<!--        <form action="#" th:action="@{/app/add}" th:object="${element}" method="post">-->
-<!--        <tr>-->
-<!--            <td><span th:text="*{element.name}"> Name </span></td>-->
-<!--            <td><span th:text="*{element.address}"> Address </span></td>-->
-<!--        </tr>-->
-<!--        </form>-->
+        <form action="#" th:action="@{/app/add}" method="post">
+        <tr>
+            <td><input name="name"> Name </input></td>
+            <td><input name="address"> Address </input></td>
+            <td><button> Add </button></td>
+        </tr>
+        </form>
     </tbody>
 
 </table>

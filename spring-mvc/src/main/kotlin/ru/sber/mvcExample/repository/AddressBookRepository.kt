@@ -15,7 +15,7 @@ class AddressBookRepository {
                 .sorted()
                 .toList()
             if (idxes[idxes.size - 1] == idxes.size) {
-                return "id${idxes.size}"
+                return "id${idxes.size + 1}"
             }
             for (i in 1..idxes[idxes.size - 1]) {
                 if (i != idxes[i - 1]) {
