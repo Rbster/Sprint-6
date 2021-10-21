@@ -58,9 +58,13 @@ class AuthFilter : Filter {
                 }
             }
         }
-        println("---- now ${clock.instant()} mast be more "+
-                "${Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cookie?.value))}")
-        if (requestURI != loginURI && requestURI != authURI && (cookie == null ||
+//        println("---- now ${clock.instant()} mast be more "+
+//                "${Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cookie?.value))}")
+        if (requestURI != loginURI
+            && requestURI != authURI
+            && requestURI != "/alt/login/auth"  // testing
+            && requestURI != "/alt/login/form"  // testing
+            && (cookie == null ||
                     Instant.from(
                         DateTimeFormatter.ISO_INSTANT.parse(cookie.value)
                     ) >= clock.instant() )) {

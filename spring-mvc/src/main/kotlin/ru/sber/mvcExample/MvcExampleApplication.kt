@@ -5,16 +5,16 @@ import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
-import ru.sber.mvcExample.servlet.MainServlet
+import ru.sber.mvcExample.servlet.LoginServlet
 import java.time.Clock
 
 @SpringBootApplication
 @EnableWebMvc
 class MvcExampleApplication {
 	@Bean
-	fun mainServletBean(): ServletRegistrationBean<*> {
+	fun loginServletBean(): ServletRegistrationBean<*> {
 		val bean: ServletRegistrationBean<*> = ServletRegistrationBean(
-			MainServlet(), "/exampleServlet/*"
+			LoginServlet(clock()), "/alt/login/*"
 		)
 		bean.setLoadOnStartup(1)
 		println("----->" + bean.servletName)
