@@ -49,8 +49,10 @@ class MVCController {
     }
     @GetMapping("/app/list")
     fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): String {
-        val foundEntries = addressBookRepository.list(searchForm)
-        model.addAttribute("list_of_elements", foundEntries.values.toList())
+        val searchTemplate = AddressInfo(searchForm.name ?: "", searchForm.address ?: "")
+        println("--------------->SearchForm = $searchTemplate")
+        val foundEntries = addressBookRepository.list(searchTemplate)
+        model.addAttribute("list_of_elements", foundEntries.toList())
         logger.info("Listed ${foundEntries.size} elements")
         return "app/list"
     }
@@ -62,11 +64,11 @@ class MVCController {
         } else {
             logger.info("Viewing element with id = $id")
         }
-
-        model.addAttribute("id", element)
-        return "viewById"
+        println("------------------------>$element")
+        model.addAttribute("element", element)
+        return "app/viewById"
     }
-    @PatchMapping("/app/{id}/edit")
+    @PostMapping("/app/{id}/edit")
     fun editById(@PathVariable("id") id: String, @ModelAttribute searchForm: AddressSearchForm, model: Model): String {
         val element = addressBookRepository.view(id)
         if (element == null) {
@@ -80,16 +82,22 @@ class MVCController {
             }
         }
 
-        return "editById"
+        return "redirect:/app/list"
     }
-    @DeleteMapping("/app/{id}/delete")
+    @GetMapping("/app/{id}/edit/form")
+    fun editForm(@PathVariable("id") id: String, model: Model): String {
+        model.addAttribute("id", id)
+        return "/app/editById"
+    }
+
+    @GetMapping("/app/{id}/delete")
     fun deleteById(@PathVariable("id") id: String): String {
         if (addressBookRepository.delete(id)) {
             logger.info("Element $id was deleted")
         } else {
             logger.error("Error during deletion $id !")
         }
-        return "deleteById"
+        return "redirect:/app/list"
     }
 
     data class LoginFormModel(val log: String, val password: String)

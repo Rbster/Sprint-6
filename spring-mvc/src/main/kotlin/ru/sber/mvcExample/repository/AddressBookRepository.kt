@@ -43,11 +43,11 @@ class AddressBookRepository {
         return  try { repoRealisation.replace(id, newElement) != null } catch (e: Exception) { false }
     }
     fun view(id: String) = repoRealisation[id]
-    fun list(searchForm: AddressSearchForm = AddressSearchForm(null, null)) = repoRealisation
+    fun list(searchTemplate: AddressInfo = AddressInfo("", "")) = repoRealisation
         .toList()
         .asSequence()
-        .filter { (searchForm.address ?: it.second.address) == it.second.address}
-        .filter { (searchForm.name ?: it.second.name) == it.second.name}
+        .filter { if (searchTemplate.name != "") searchTemplate.name == it.second.name else true }
+        .filter { if (searchTemplate.address != "") searchTemplate.address == it.second.address else true }
         .toMap()
 }
 

@@ -17,8 +17,23 @@
         <td colspan="2"> No addresses Available </td>
     </tr>
     <tr th:each="elem : ${list_of_elements}">
-        <td><span th:text="${elem.name}"> Name </span></td>
-        <td><span th:text="${elem.address}"> Address </span></td>
+        <td><span th:text="${elem.second.name}"> Name </span></td>
+        <td><span th:text="${elem.second.address}"> Address </span></td>
+        <td>
+            <form th:action="@{/app/{id}/view(id=${elem.first})}" method="get">
+                <button th:text="|View ${elem.first}|"> id </button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/app/{id}/edit/form(id=${elem.first})}" method="get">
+                <button th:text="|Edit ${elem.first}|"> id </button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/app/{id}/delete(id=${elem.first})}" method="get">
+                <button th:text="|Delete ${elem.first}|"> id </button>
+            </form>
+        </td>
     </tr>
         <form action="#" th:action="@{/app/add}" method="post">
         <tr>
