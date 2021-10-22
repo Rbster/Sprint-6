@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.RestController
@@ -13,9 +12,6 @@ import ru.sber.mvcExample.repository.AddressBookRepository
 import ru.sber.mvcExample.repository.AddressInfo
 import ru.sber.mvcExample.repository.AddressSearchForm
 import java.time.Clock
-import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +25,7 @@ class RestController {
 
 
     @PostMapping("/app/add", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
-    fun add(@ModelAttribute element: AddressInfo): ResponseEntity<Pair<String, AddressInfo>> {
+    fun add(@RequestBody element: AddressInfo): ResponseEntity<Pair<String, AddressInfo>> {
         println("---------->$element")
         val id: String? = addressBookRepository.add(element)
         return if (id == null) {
@@ -41,7 +37,7 @@ class RestController {
             ResponseEntity.ok(id to element)
         }
     }
-    @GetMapping("/app/list",  consumes =  [APPLICATION_JSON_VALUE])
+    @GetMapping("/app/list", produces = [APPLICATION_JSON_VALUE])
     fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): ResponseEntity<Map<String, AddressInfo>> {
         val searchTemplate = AddressInfo(searchForm.name ?: "", searchForm.address ?: "")
         println("--------------->SearchForm = $searchTemplate")
@@ -68,17 +64,17 @@ class RestController {
     }
     @PutMapping("/app/{id}/edit", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun editById(@PathVariable("id") id: String,
-                 @ModelAttribute searchForm: AddressSearchForm,
+                 @RequestBody searchForm: AddressSearchForm,
                  model: Model): ResponseEntity<Pair<String, AddressInfo>> {
         val element = addressBookRepository.view(id)
         return if (element == null) {
             logger.error("No element with id = $id, can't modify")
             ResponseEntity.notFound().build()
         } else {
-            val isEdited = addressBookRepository.edit(id, searchForm)
-            if (isEdited) {
-                logger.info("Element $id edited all right")
-                ResponseEntity.ok(id to element)
+            val editedElement = addressBookRepository.edit(id, searchForm)
+            if (editedElement != null) {
+                logger.info("Element $id edited all right: $editedElement")
+                ResponseEntity.ok(id to editedElement)
             } else {
                 logger.error("Editing error!")
                 ResponseEntity.internalServerError().build()
@@ -99,7 +95,7 @@ class RestController {
         if (addressBookRepository.delete(id)) {
             logger.info("Element $id was deleted")
         } else {
-            logger.error("Error during deletion $id !")
+            logger.error("Error during deletion $id ! or there was no element with this id")
         }
         return ResponseEntity.noContent().build()
     }

@@ -74,9 +74,9 @@ class MVCController {
         if (element == null) {
             logger.error("No element with id = $id, can't modify")
         } else {
-            val isEdited = addressBookRepository.edit(id, searchForm)
-            if (isEdited) {
-                logger.info("Element $id edited all right")
+            val editedElement = addressBookRepository.edit(id, searchForm)
+            if (editedElement != null) {
+                logger.info("Element $id edited all right: $editedElement")
             } else {
                 logger.error("Editing error!")
             }

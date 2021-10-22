@@ -37,10 +37,13 @@ class AddressBookRepository {
     fun delete(id: String): Boolean {
         return  try { repoRealisation.remove(id) != null } catch (e: Exception) { false }
     }
-    fun edit(id: String, form: AddressSearchForm): Boolean  {
-        val oldElement = repoRealisation[id] ?: return false
+    fun edit(id: String, form: AddressSearchForm): AddressInfo?  {
+        val oldElement = repoRealisation[id] ?: return null
+        if (form.name == null && form.address == null) {
+            return oldElement
+        }
         val newElement = AddressInfo(form.name ?: oldElement.name, form.address ?: oldElement.address)
-        return  try { repoRealisation.replace(id, newElement) != null } catch (e: Exception) { false }
+        return  try { repoRealisation.replace(id, newElement) } catch (e: Exception) { null }
     }
     fun view(id: String) = repoRealisation[id]
     fun list(searchTemplate: AddressInfo = AddressInfo("", "")) = repoRealisation
