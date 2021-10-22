@@ -3,6 +3,8 @@ package ru.sber.mvcExample.controllers
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -25,42 +27,31 @@ class RestController {
         @Autowired set
 
 
-    @PostMapping("/auth")
-    fun authorising(@ModelAttribute loginForm: LoginFormModel, request: HttpServletRequest, response: HttpServletResponse) {
-        println("LoginForm = $loginForm")
-        if (loginForm.log == "admin" && loginForm.password == "admin") {
-            response.addCookie(Cookie("auth", clock.instant().toString()))
-        }
-        response.sendRedirect(request.contextPath + "/app/list")
-    }
 
-    @GetMapping("/login")
-    fun login(model: Model): String {
-        return "login"
-    }
-
-    @PostMapping("/app/add")
-    fun add(@ModelAttribute element: AddressInfo): String {
+    @PostMapping("/app/add", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    fun add(@ModelAttribute element: AddressInfo): ResponseEntity<Pair<String, AddressInfo>> {
         println("---------->$element")
         val id: String? = addressBookRepository.add(element)
-        if (id == null) {
+        return if (id == null) {
             logger.error("Add went wrong. Element $element wasn't added")
+            ResponseEntity.notFound().build()
+
         } else {
             logger.info("Element with $id added")
+            ResponseEntity.ok(id to element)
         }
-        return "redirect:/app/list"
     }
-    @GetMapping("/app/list")
-    fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): String {
+    @GetMapping("/app/list",  consumes =  [APPLICATION_JSON_VALUE])
+    fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): ResponseEntity<Map<String, AddressInfo>> {
         val searchTemplate = AddressInfo(searchForm.name ?: "", searchForm.address ?: "")
         println("--------------->SearchForm = $searchTemplate")
         val foundEntries = addressBookRepository.list(searchTemplate)
         model.addAttribute("list_of_elements", foundEntries.toList())
         logger.info("Listed ${foundEntries.size} elements")
-        return "app/list"
+        return ResponseEntity.ok(foundEntries)
     }
-    @GetMapping("/app/{id}/view")
-    fun viewById(@PathVariable("id") id: String, model: Model): String {
+    @GetMapping("/app/{id}/view", produces = [APPLICATION_JSON_VALUE])
+    fun viewById(@PathVariable("id") id: String, model: Model): ResponseEntity<Pair<String, AddressInfo>> {
         val element = addressBookRepository.view(id)
         if (element == null) {
             logger.error("No element with id = $id")
@@ -69,38 +60,48 @@ class RestController {
         }
         println("------------------------>$element")
         model.addAttribute("element", element)
-        return "app/viewById"
+        return if (element != null) {
+            ResponseEntity.ok(id to element)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
-    @PostMapping("/app/{id}/edit")
-    fun editById(@PathVariable("id") id: String, @ModelAttribute searchForm: AddressSearchForm, model: Model): String {
+    @PutMapping("/app/{id}/edit", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    fun editById(@PathVariable("id") id: String,
+                 @ModelAttribute searchForm: AddressSearchForm,
+                 model: Model): ResponseEntity<Pair<String, AddressInfo>> {
         val element = addressBookRepository.view(id)
-        if (element == null) {
+        return if (element == null) {
             logger.error("No element with id = $id, can't modify")
+            ResponseEntity.notFound().build()
         } else {
             val isEdited = addressBookRepository.edit(id, searchForm)
             if (isEdited) {
                 logger.info("Element $id edited all right")
+                ResponseEntity.ok(id to element)
             } else {
                 logger.error("Editing error!")
+                ResponseEntity.internalServerError().build()
+
             }
         }
 
-        return "redirect:/app/list"
-    }
-    @GetMapping("/app/{id}/edit/form")
-    fun editForm(@PathVariable("id") id: String, model: Model): String {
-        model.addAttribute("id", id)
-        return "/app/editById"
-    }
 
-    @GetMapping("/app/{id}/delete")
-    fun deleteById(@PathVariable("id") id: String): String {
+    }
+//    @PutMapping("/app/{id}/edit/form")
+//    fun editForm(@PathVariable("id") id: String, model: Model): String {
+//        model.addAttribute("id", id)
+//        return "/app/editById"
+//    }
+
+    @DeleteMapping("/app/{id}/delete", produces = [APPLICATION_JSON_VALUE])
+    fun deleteById(@PathVariable("id") id: String): ResponseEntity<Any> {
         if (addressBookRepository.delete(id)) {
             logger.info("Element $id was deleted")
         } else {
             logger.error("Error during deletion $id !")
         }
-        return "redirect:/app/list"
+        return ResponseEntity.noContent().build()
     }
 
     data class LoginFormModel(val log: String, val password: String)

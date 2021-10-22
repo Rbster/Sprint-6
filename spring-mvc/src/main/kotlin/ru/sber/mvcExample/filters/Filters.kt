@@ -60,6 +60,7 @@ class AuthFilter : Filter {
         }
 //        println("---- now ${clock.instant()} mast be more "+
 //                "${Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cookie?.value))}")
+        println("---------- cookie = ${cookie?.name} : ${cookie?.value} ")
         if (requestURI != loginURI
             && requestURI != authURI
             && requestURI != "/alt/login/auth"  // testing
@@ -69,6 +70,7 @@ class AuthFilter : Filter {
                         DateTimeFormatter.ISO_INSTANT.parse(cookie.value)
                     ) >= clock.instant() )) {
             // redirect
+
             println("<----- redirect from AuthFilter")
             httpResponse.sendRedirect(loginURI)
 
