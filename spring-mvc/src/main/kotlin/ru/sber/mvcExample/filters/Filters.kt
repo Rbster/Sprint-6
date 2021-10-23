@@ -47,8 +47,11 @@ class AuthFilter : Filter {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
         var cookie: Cookie? = null
-        val loginURI = request.contextPath + "/login"
-        val authURI = request.contextPath + "/auth"
+//        val loginURI = request.contextPath + "/login"
+//        val authURI = request.contextPath + "/auth"
+        val loginURI = request.contextPath + "/alt/login/form"
+        val authURI = request.contextPath + "/alt/login/auth"
+
         val requestURI = request.requestURI
 
         if (httpRequest.cookies != null) {
@@ -63,8 +66,8 @@ class AuthFilter : Filter {
         println("---------- cookie = ${cookie?.name} : ${cookie?.value} ")
         if (requestURI != loginURI
             && requestURI != authURI
-            && requestURI != "/alt/login/auth"  // testing
-            && requestURI != "/alt/login/form"  // testing
+//            && requestURI != "/alt/login/auth"  // testing
+//            && requestURI != "/alt/login/form"  // testing
             && (cookie == null ||
                     Instant.from(
                         DateTimeFormatter.ISO_INSTANT.parse(cookie.value)

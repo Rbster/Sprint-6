@@ -16,10 +16,8 @@ import javax.servlet.http.HttpServletResponse
 import kotlin.io.path.inputStream
 import kotlin.streams.asSequence
 
-class LoginServlet(@Autowired val clock: Clock) : HttpServlet() {
 
-//    lateinit var clock: Clock
-//    @Autowired set
+class LoginServlet(private val clock: Clock) : HttpServlet() {
 
     override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
         var cookie: Cookie? = null

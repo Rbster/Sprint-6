@@ -22,19 +22,19 @@ class MVCController {
     lateinit var clock: Clock
     @Autowired set
 
-    @PostMapping("/auth")
-    fun authorising(@ModelAttribute loginForm: LoginFormModel, request: HttpServletRequest, response: HttpServletResponse) {
-        println("LoginForm = $loginForm")
-        if (loginForm.log == "admin" && loginForm.password == "admin") {
-            response.addCookie(Cookie("auth", clock.instant().toString()))
-        }
-        response.sendRedirect(request.contextPath + "/app/list")
-    }
-
-    @GetMapping("/login")
-    fun login(model: Model): String {
-        return "login"
-    }
+//    @PostMapping("/auth")
+//    fun authorising(@ModelAttribute loginForm: LoginFormModel, request: HttpServletRequest, response: HttpServletResponse) {
+//        println("LoginForm = $loginForm")
+//        if (loginForm.log == "admin" && loginForm.password == "admin") {
+//            response.addCookie(Cookie("auth", clock.instant().toString()))
+//        }
+//        response.sendRedirect(request.contextPath + "/app/list")
+//    }
+//
+//    @GetMapping("/login")
+//    fun login(model: Model): String {
+//        return "login"
+//    }
 
     @PostMapping("/app/add")
     fun add(@ModelAttribute element: AddressInfo): String {
