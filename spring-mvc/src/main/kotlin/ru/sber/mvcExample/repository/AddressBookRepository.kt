@@ -25,6 +25,9 @@ class AddressBookRepository {
             return "id0" // never happens
         }
     }
+    fun clearRepository() {
+        repoRealisation.clear()
+    }
     fun add(element: AddressInfo): String? {
         val id = nextId()
         return try {
@@ -56,3 +59,4 @@ class AddressBookRepository {
 
 data class AddressInfo(var name: String, var address: String)
 data class AddressSearchForm(val name: String?, val address: String?)
+data class LoginFormModel(val log: String, val password: String)

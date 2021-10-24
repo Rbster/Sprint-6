@@ -100,7 +100,6 @@ class MVCController {
         return "redirect:/app/list"
     }
 
-    data class LoginFormModel(val log: String, val password: String)
     companion object {
         var logger: Log = LogFactory.getLog(this::class.java)
     }

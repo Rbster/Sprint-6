@@ -30,8 +30,7 @@ class RestController {
         val id: String? = addressBookRepository.add(element)
         return if (id == null) {
             logger.error("Add went wrong. Element $element wasn't added")
-            ResponseEntity.notFound().build()
-
+            ResponseEntity.internalServerError().build()
         } else {
             logger.info("Element with $id added")
             ResponseEntity.ok(id to element)
@@ -100,7 +99,6 @@ class RestController {
         return ResponseEntity.noContent().build()
     }
 
-    data class LoginFormModel(val log: String, val password: String)
     companion object {
         var logger: Log = LogFactory.getLog(this::class.java)
     }
