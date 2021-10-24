@@ -94,14 +94,11 @@ class RestTemplateTests {
         assertThat(resp.body?.second).isEqualTo(newElem)
     }
 
-
-
     @Test
     fun `get list all`() {
         val headers = HttpHeaders()
         headers.set("Cookie", "auth=2021-10-22T09:50:55.985703Z")
         headers.contentType = MediaType.APPLICATION_JSON
-
 
         val resp = restTemplate.exchange(url("api/app/list"),
             HttpMethod.GET,

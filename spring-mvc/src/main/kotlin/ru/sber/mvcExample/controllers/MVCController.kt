@@ -10,9 +10,6 @@ import ru.sber.mvcExample.repository.AddressBookRepository
 import ru.sber.mvcExample.repository.AddressInfo
 import ru.sber.mvcExample.repository.AddressSearchForm
 import java.time.Clock
-import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Controller
 class MVCController {
@@ -21,20 +18,6 @@ class MVCController {
 
     lateinit var clock: Clock
     @Autowired set
-
-//    @PostMapping("/auth")
-//    fun authorising(@ModelAttribute loginForm: LoginFormModel, request: HttpServletRequest, response: HttpServletResponse) {
-//        println("LoginForm = $loginForm")
-//        if (loginForm.log == "admin" && loginForm.password == "admin") {
-//            response.addCookie(Cookie("auth", clock.instant().toString()))
-//        }
-//        response.sendRedirect(request.contextPath + "/app/list")
-//    }
-//
-//    @GetMapping("/login")
-//    fun login(model: Model): String {
-//        return "login"
-//    }
 
     @PostMapping("/app/add")
     fun add(@ModelAttribute element: AddressInfo): String {
@@ -47,6 +30,7 @@ class MVCController {
         }
         return "redirect:/app/list"
     }
+
     @GetMapping("/app/list")
     fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): String {
         val searchTemplate = AddressInfo(searchForm.name ?: "", searchForm.address ?: "")
@@ -56,6 +40,7 @@ class MVCController {
         logger.info("Listed ${foundEntries.size} elements")
         return "app/list"
     }
+
     @GetMapping("/app/{id}/view")
     fun viewById(@PathVariable("id") id: String, model: Model): String {
         val element = addressBookRepository.view(id)
@@ -68,6 +53,7 @@ class MVCController {
         model.addAttribute("element", element)
         return "app/viewById"
     }
+
     @PostMapping("/app/{id}/edit")
     fun editById(@PathVariable("id") id: String, @ModelAttribute searchForm: AddressSearchForm, model: Model): String {
         val element = addressBookRepository.view(id)
@@ -84,6 +70,7 @@ class MVCController {
 
         return "redirect:/app/list"
     }
+
     @GetMapping("/app/{id}/edit/form")
     fun editForm(@PathVariable("id") id: String, model: Model): String {
         model.addAttribute("id", id)

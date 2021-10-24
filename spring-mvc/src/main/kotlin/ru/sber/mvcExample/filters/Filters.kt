@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import org.springframework.web.filter.CommonsRequestLoggingFilter
 import java.time.Clock
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -38,7 +37,6 @@ class LoggingFilter : Filter {
 @Component
 @Order(2)
 class AuthFilter : Filter {
-
     lateinit var clock: Clock
     @Autowired set
 
@@ -47,8 +45,6 @@ class AuthFilter : Filter {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
         var cookie: Cookie? = null
-//        val loginURI = request.contextPath + "/login"
-//        val authURI = request.contextPath + "/auth"
         val loginURI = request.contextPath + "/alt/login/form"
         val authURI = request.contextPath + "/alt/login/auth"
 
@@ -61,13 +57,9 @@ class AuthFilter : Filter {
                 }
             }
         }
-//        println("---- now ${clock.instant()} mast be more "+
-//                "${Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cookie?.value))}")
         println("---------- cookie = ${cookie?.name} : ${cookie?.value} ")
         if (requestURI != loginURI
             && requestURI != authURI
-//            && requestURI != "/alt/login/auth"  // testing
-//            && requestURI != "/alt/login/form"  // testing
             && (cookie == null ||
                     Instant.from(
                         DateTimeFormatter.ISO_INSTANT.parse(cookie.value)

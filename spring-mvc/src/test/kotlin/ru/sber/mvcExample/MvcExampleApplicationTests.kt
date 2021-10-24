@@ -23,13 +23,6 @@ class MvcExampleApplicationTests {
 	@Autowired
 	private lateinit var repository: AddressBookRepository
 
-
-//	@Test
-//	fun `test list page`() {
-//		mockMvc.perform(get("/app/list"))
-//			.andExpect(status().isOk)
-//	}
-
 	@Test
 	fun `test list page`() {
 		mockMvc.perform(

@@ -22,8 +22,6 @@ class RestController {
     lateinit var clock: Clock
         @Autowired set
 
-
-
     @PostMapping("/app/add", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun add(@RequestBody element: AddressInfo): ResponseEntity<Pair<String, AddressInfo>> {
         println("---------->$element")
@@ -36,6 +34,7 @@ class RestController {
             ResponseEntity.ok(id to element)
         }
     }
+
     @GetMapping("/app/list", produces = [APPLICATION_JSON_VALUE])
     fun list(@ModelAttribute searchForm: AddressSearchForm, model: Model): ResponseEntity<Map<String, AddressInfo>> {
         val searchTemplate = AddressInfo(searchForm.name ?: "", searchForm.address ?: "")
@@ -45,6 +44,7 @@ class RestController {
         logger.info("Listed ${foundEntries.size} elements")
         return ResponseEntity.ok(foundEntries)
     }
+
     @GetMapping("/app/{id}/view", produces = [APPLICATION_JSON_VALUE])
     fun viewById(@PathVariable("id") id: String, model: Model): ResponseEntity<Pair<String, AddressInfo>> {
         val element = addressBookRepository.view(id)
@@ -61,6 +61,7 @@ class RestController {
             ResponseEntity.notFound().build()
         }
     }
+
     @PutMapping("/app/{id}/edit", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun editById(@PathVariable("id") id: String,
                  @RequestBody searchForm: AddressSearchForm,
@@ -80,14 +81,7 @@ class RestController {
 
             }
         }
-
-
     }
-//    @PutMapping("/app/{id}/edit/form")
-//    fun editForm(@PathVariable("id") id: String, model: Model): String {
-//        model.addAttribute("id", id)
-//        return "/app/editById"
-//    }
 
     @DeleteMapping("/app/{id}/delete", produces = [APPLICATION_JSON_VALUE])
     fun deleteById(@PathVariable("id") id: String): ResponseEntity<Any> {

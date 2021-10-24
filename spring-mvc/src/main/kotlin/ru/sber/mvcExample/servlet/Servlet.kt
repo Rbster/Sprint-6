@@ -1,14 +1,9 @@
 package ru.sber.mvcExample.servlet
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.web.servlet.ServletRegistrationBean
-import org.springframework.context.annotation.Bean
-import org.springframework.stereotype.Component
 import java.nio.file.Paths
 import java.time.Clock
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import javax.servlet.ServletContext
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -45,7 +40,6 @@ class LoginServlet(private val clock: Clock) : HttpServlet() {
             }
             outputStream.flush()
             outputStream.close() // should I?
-//            req.getRequestDispatcher("login.html").forward(req, resp)
 
         } else {
             resp.sendRedirect("/app/list")
@@ -93,17 +87,11 @@ class LoginServlet(private val clock: Clock) : HttpServlet() {
                 DateTimeFormatter.ISO_INSTANT.parse(cookie.value)
             ) >= clock.instant() ) {
 
-//            if ((req.getHeader("Content-Type").split("; ")[0] == "application/x-www-form-urlencoded" )
-//                && (body == "log=${login}&password=${password}")
-//                || (req.getHeader("Content-Type") == "application/json")
-//                && (body == "{\"log\":\"${login}\",\"password\":\"${password}\"}")
-//            ) {
             if (isRightLogin) {
                 println("----------> LOG IN")
                 val newCookie = Cookie("auth", clock.instant().toString())
                 newCookie.path = "/"
                 resp.addCookie(newCookie)
-//                resp.sendRedirect("/alt/login/form")
                 resp.sendRedirect(if (isToWeb) "/app/list" else "/api/app/list")
             } else {
                 if (isToWeb) {
